@@ -1,4 +1,4 @@
-#include "../include/Experiment.h"
+#include "../include/experiment.h"
 
 Experiment::Experiment(const std::string &name, const std::string &id,
                        const std::vector<double> &temperatures)
