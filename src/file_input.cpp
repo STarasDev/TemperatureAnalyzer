@@ -7,7 +7,7 @@ namespace data {
      * @param buffer_size
      */
     FileInput::FileInput(const std::string &file_name, size_t buffer_size)
-            : buffer_size_{buffer_size}, end_of_file_{false} {
+        : buffer_size_{buffer_size}, end_of_file_{false} {
         initFileReading(file_name);
     }
 

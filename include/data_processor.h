@@ -1,20 +1,13 @@
 #pragma once
 
-#include "experiment.h"
-
 #include <vector>
 #include <unordered_map>
-#include <map>
 #include <unordered_set>
 #include <mutex>
-#include <memory>
-#include <iostream>
 #include <sstream>
 #include <fstream>
-#include <cstdio>
-#include <cstdlib>
-#include <dirent.h>
-#include <sys/stat.h>
+#include <iostream>
+using namespace std::filesystem;
 
 /**
  * A main working class, which processes a chink of data with experiments, and produces the statistics results

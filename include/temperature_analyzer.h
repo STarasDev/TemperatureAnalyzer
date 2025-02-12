@@ -3,12 +3,6 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <thread>
-#include <mutex>
-#include <condition_variable>
-#include <fstream>
-#include <iostream>
-#include "experiment.h"
 #include "file_input.h"
 #include "data_processor.h"
 #include "result_generator.h"
@@ -31,7 +25,7 @@ namespace analyzer {
 
         void analyze();
 
-        void displayTemperatureStatistics();
+        void displayTemperatureStatistics() const;
 
     private:
         size_t num_threads_;

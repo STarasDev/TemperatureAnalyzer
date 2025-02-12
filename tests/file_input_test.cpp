@@ -2,14 +2,12 @@
 #include "../include/file_input.h"
 using namespace data;
 
-TEST(FileInputTest, ReadChunk)
-{
-    const size_t CHUNKS_SIZE = 6;
+TEST(FileInputTest, ReadChunk) {
+    constexpr size_t CHUNKS_SIZE = 6;
     std::vector<std::string> chunks[CHUNKS_SIZE];
     FileInput fileInput("../../data/test_input.csv", 2);
-    for(size_t index = 0 ; index < CHUNKS_SIZE ; ++index)
-    {
-        chunks[index] = fileInput.readChunk();
+    for (auto &chunk: chunks) {
+        chunk = fileInput.readChunk();
     }
 
     ASSERT_EQ(chunks[0].size(), 2);
@@ -17,4 +15,3 @@ TEST(FileInputTest, ReadChunk)
     ASSERT_EQ(chunks[2].size(), 2);
     ASSERT_TRUE(chunks[3].empty());
 }
-

@@ -9,13 +9,12 @@ namespace analyzer {
      */
     TemperatureAnalyzer::TemperatureAnalyzer(const std::string &input_file_path,
                                              size_t num_threads, size_t buffer_size_for_chunk)
-            : num_threads_(num_threads),
-              file_input_(input_file_path, buffer_size_for_chunk),
-              processors_(num_threads) {
+        : num_threads_(num_threads),
+          file_input_(input_file_path, buffer_size_for_chunk),
+          processors_(num_threads) {
     }
 
     void TemperatureAnalyzer::analyze() {
-
         DataProcessor::removeTemporaryDataFiles();
 
         // Launch processing threads
@@ -40,7 +39,7 @@ namespace analyzer {
     /**
      * Runs the final data merge, calculations and displaying the results
      */
-    void TemperatureAnalyzer::displayTemperatureStatistics() {
+    void TemperatureAnalyzer::displayTemperatureStatistics() const {
         // Merge the results from all processors
         DataProcessor finalProcessor;
         for (const auto &processor: processors_) {

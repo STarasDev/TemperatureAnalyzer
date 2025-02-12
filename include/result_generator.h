@@ -1,10 +1,7 @@
 #pragma once
 
-#include <ostream>
 #include <iostream>
 #include <sstream>
-#include <fstream>
-#include <vector>
 #include "../include/data_processor.h"
 using namespace analyzer;
 

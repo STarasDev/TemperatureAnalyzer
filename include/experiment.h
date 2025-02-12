@@ -12,11 +12,11 @@ namespace data {
         Experiment(std::string name, std::string id,
                    const std::vector<double> &temperatures);
 
-        const std::string &getName() const;
+        [[nodiscard]] const std::string &getName() const;
 
-        const std::string &getID() const;
+        [[nodiscard]] const std::string &getID() const;
 
-        const std::vector<double> &getTemperatures() const;
+        [[nodiscard]] const std::vector<double> &getTemperatures() const;
 
     private:
         std::string name_;

@@ -12,9 +12,12 @@ namespace command {
     class CommandlineProcessor {
     public:
         explicit CommandlineProcessor(std::string input_file_name);
-        bool processArguments(int argc, char* argv[]);
+
+        bool processArguments(int argc, char *argv[]);
+
     private:
         static bool runHelpCommand();
+
         bool runGenerateCommand(std::istringstream &iss) const;
 
         std::string input_file_name_;

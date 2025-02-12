@@ -4,6 +4,7 @@ namespace report {
     /**
      * Writes the results to the output file
      * @param processor
+     * @param output_file_name
      */
     void ResultGenerator::writeToFile(const DataProcessor &processor, const std::string &output_file_name) {
         try {
@@ -50,15 +51,15 @@ namespace report {
 
             double average = sum / static_cast<double>(temperatures->size());
             os << process_name
-               << "," << average
-               << "," << lowest
-               << "," << highest
-               << std::endl;
+                    << "," << average
+                    << "," << lowest
+                    << "," << highest
+                    << std::endl;
         }
 
         os << "Process with the highest temperature: "
-           << processor.getExperimentNameWithHighestTemperature()
-           << ", temperature: " << processor.getExperimentHighestTemperature()
-           << std::endl;
+                << processor.getExperimentNameWithHighestTemperature()
+                << ", temperature: " << processor.getExperimentHighestTemperature()
+                << std::endl;
     }
 }

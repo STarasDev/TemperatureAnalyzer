@@ -1,11 +1,10 @@
 #include <utility>
-
 #include "../include/experiment.h"
 
 namespace data {
     Experiment::Experiment(std::string name, std::string id,
                            const std::vector<double> &temperatures)
-            : name_(std::move(name)), id_(std::move(id)), temperatures_(temperatures) {
+        : name_(std::move(name)), id_(std::move(id)), temperatures_(temperatures) {
     }
 
     const std::string &Experiment::getName() const {

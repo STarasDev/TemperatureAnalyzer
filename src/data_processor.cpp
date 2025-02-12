@@ -77,19 +77,20 @@ namespace analyzer {
         std::lock_guard<std::mutex> lock(mutex_);
 
         for (const auto &process_temperatures: process_temperatures_) {
-
             const std::string &process_name = process_temperatures.first;
             std::string file_name = DATA_FILES_DIRECTORY;
             file_name.append("process_").append(process_name)
-            .append("_").append(std::to_string(thread_id))
-            .append("_").append(std::to_string(chunk_id)).append(".dat");
+                    .append("_").append(std::to_string(thread_id))
+                    .append("_").append(std::to_string(chunk_id))
+                    .append(".dat");
 
             process_names_.emplace(process_name, file_name);
 
-            std::ofstream output_file(file_name,  std::ios::binary | std::ios::ate | std::ios_base::app);
+            std::ofstream output_file(file_name, std::ios::binary | std::ios::ate | std::ios_base::app);
             for (const auto &temperature: process_temperatures.second) {
-                std::string temp = std::to_string(temperature) + "\n";
-                output_file.write(temp.c_str(), temp.size());
+                std::string temp = std::to_string(temperature);
+                temp += "\n";
+                output_file << temp;
             }
             output_file.close();
         }
@@ -102,11 +103,11 @@ namespace analyzer {
      * @param process_file_name
      * @return process_temperatures
      */
-    std::unique_ptr<std::vector<double>>
+    std::unique_ptr<std::vector<double> >
     DataProcessor::getProcessTemperaturesFromFile(const std::string &process_file_name) {
         std::ifstream process_file(process_file_name);
         std::string line;
-        std::unique_ptr<std::vector<double>> process_temperatures(new std::vector<double>());
+        std::unique_ptr<std::vector<double> > process_temperatures(new std::vector<double>());
         while (std::getline(process_file, line)) {
             process_temperatures->emplace_back(std::stod(line));
         }
@@ -117,11 +118,11 @@ namespace analyzer {
      * Gets the process' names needed to read chunk files
      * @return process_names_
      */
-    const std::unordered_map<std::string, std::string>& DataProcessor::getProcessNames() const {
+    const std::unordered_map<std::string, std::string> &DataProcessor::getProcessNames() const {
         return process_names_;
     }
 
-    const std::string& DataProcessor::getExperimentNameWithHighestTemperature() const {
+    const std::string &DataProcessor::getExperimentNameWithHighestTemperature() const {
         return experiment_name_with_highest_temperature_;
     }
 
@@ -134,27 +135,20 @@ namespace analyzer {
      */
     void DataProcessor::removeTemporaryDataFiles() {
         const std::string file_mask{".dat"};
-        DIR *dir = opendir(DATA_FILES_DIRECTORY.c_str());
-        if (dir == nullptr) {
-            throw std::runtime_error("Failed to open directory: " + DATA_FILES_DIRECTORY);
+        if (!std::filesystem::exists(DATA_FILES_DIRECTORY)
+            && std::filesystem::is_directory(DATA_FILES_DIRECTORY)) {
+            std::cerr << "Directory does not exist: " << DATA_FILES_DIRECTORY;
+            return;
         }
-
-        dirent *entry;
-        while ((entry = readdir(dir)) != nullptr) {
-            std::string file_name = entry->d_name;
+        for (const auto &entry: std::filesystem::directory_iterator(DATA_FILES_DIRECTORY)) {
+            std::string file_name = entry.path();
             if (file_name.find(file_mask) != std::string::npos) {
                 std::string file_path = DATA_FILES_DIRECTORY;
                 file_path.append("/").append(file_name);
-
-                struct stat file_stat{};
-                if (stat(file_path.c_str(), &file_stat) == 0 && S_ISREG(file_stat.st_mode)) {
-                    if (remove(file_path.c_str()) != 0) {
-                        throw std::runtime_error("Failed to remove file: " + file_path);
-                    }
+                if (!std::filesystem::remove(file_path)) {
+                    throw std::runtime_error("Failed to remove file: " + file_path);
                 }
             }
         }
-
-        closedir(dir);
     }
 }
