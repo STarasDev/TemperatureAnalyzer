@@ -20,36 +20,37 @@
  * A main working class, which processes a chink of data with experiments, and produces the statistics results
  * including the intermediary files with processes' data.
  */
-class DataProcessor {
-public:
-    void processChunk(const std::vector<std::string> &chunk, int threadId, int chunkId);
+namespace analyzer {
+    const std::string DATA_FILES_DIRECTORY = "./";
 
-    void merge(const DataProcessor &other);
+    class DataProcessor {
+    public:
+        DataProcessor();
 
-    const std::unordered_map<std::string, std::string> getProcessNames();
+        void processChunk(const std::vector<std::string> &chunk, size_t thread_id, size_t chunk_id);
 
-    const std::unique_ptr<std::vector<double>>
-    getProcessTemperaturesFromFile(const std::string &processFileName) const;
+        void merge(const DataProcessor &other);
 
-    static void removeTemporaryDataFiles();
+        const std::unordered_map<std::string, std::string>& getProcessNames() const;
 
-    static const std::string& getExperimentNameWithHighestTemperature();
-    static double getExperimentHighestTemperature();
-    static const std::string& getDataFilesDirectory();
+        static std::unique_ptr<std::vector<double>>
+        getProcessTemperaturesFromFile(const std::string &process_file_name) ;
 
-private:
-    void processExperiment(const std::string &name, const std::string &id,
-                           const std::vector<double> &temperatures);
+        static void removeTemporaryDataFiles();
 
-    void storeProcessExperiment(int threadId, int chunkId);
+        const std::string& getExperimentNameWithHighestTemperature() const;
+        double getExperimentHighestTemperature() const;
 
-    std::unordered_map<std::string, std::vector<double>> processTemperatures;
-    std::unordered_map<std::string, std::string> processNames;
-    mutable std::mutex mutex;
+    private:
+        void processExperiment(const std::string &name, const std::vector<double> &temperatures);
 
-    static const std::string dataFilesDirectory;
-    static const std::string fileNameHighestTemperature;
+        void storeProcessExperiment(size_t thread_id, size_t chunk_id);
 
-    static std::string experimentNameWithHighestTemperature;
-    static double highestTemperature;
-};
+        std::unordered_map<std::string, std::vector<double>> process_temperatures_;
+        std::unordered_map<std::string, std::string> process_names_;
+        mutable std::mutex mutex_;
+
+        std::string experiment_name_with_highest_temperature_;
+        double highest_temperature_;
+    };
+}

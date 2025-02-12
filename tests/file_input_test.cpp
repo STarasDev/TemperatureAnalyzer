@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "../include/file_input.h"
+using namespace data;
 
 TEST(FileInputTest, ReadChunk)
 {

@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "../include/data_processor.h"
+using namespace analyzer;
 
 TEST(DataProcessorTest, ProcessChunk)
 {

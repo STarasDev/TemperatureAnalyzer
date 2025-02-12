@@ -1,87 +1,88 @@
 #include "../include/file_input.h"
 
-/**
- * FileInput constructor
- * @param filename
- * @param bufferSize
- */
-FileInput::FileInput(const std::string &filename, size_t bufferSize)
-        : bufferSize(bufferSize), endOfFile(false) {
-    initFileReading(filename, bufferSize);
-}
-
-/**
- * Initialises a file reading in a thread
- * @param filename
- * @param bufferSize
- */
-void FileInput::initFileReading(const std::string &filename, size_t bufferSize) {
-    file.open(filename);
-    if (!file.is_open()) {
-        throw std::runtime_error("Failed to open file: " + filename);
+namespace data {
+    /**
+     * FileInput constructor
+     * @param file_name
+     * @param buffer_size
+     */
+    FileInput::FileInput(const std::string &file_name, size_t buffer_size)
+            : buffer_size_{buffer_size}, end_of_file_{false} {
+        initFileReading(file_name);
     }
 
-    readerThread = std::thread(&FileInput::readFile, this);
-}
-
-/**
- * Destructor
- */
-FileInput::~FileInput() {
-    if (readerThread.joinable()) {
-        readerThread.join();
-    }
-    file.close();
-}
-
-/**
- * Checks if a file reading is finished and there are no data to be processed
- * @return
- */
-bool FileInput::isEOF() const {
-    return endOfFile && chunks.empty();
-}
-
-/**
- * Reads a chunk of file and gives it to a reading thread when it's ready
- * @return
- */
-std::vector<std::string> FileInput::readChunk() {
-    std::unique_lock<std::mutex> lock(mutex);
-    cv.wait(lock, [&] { return !chunks.empty() || endOfFile; });
-    if (!chunks.empty()) {
-        std::vector<std::string> chunk = std::move(chunks.front());
-        chunks.pop();
-        return chunk;
-    }
-    return {};
-}
-
-/**
- * A file reading procedure. It is used by
- * a separate thread, which implements a producer-consumer pattern.
- */
-void FileInput::readFile() {
-    std::string line;
-    bool headerSkipped = false;
-    while (std::getline(file, line)) {
-        std::unique_lock<std::mutex> lock(mutex);
-        if (!headerSkipped) {
-            headerSkipped = true;
-            continue;
+    /**
+     * Initialises a file reading in a thread
+     * @param file_name
+     */
+    void FileInput::initFileReading(const std::string &file_name) {
+        file_.open(file_name);
+        if (!file_.is_open()) {
+            throw std::runtime_error("Failed to open file: " + file_name);
         }
-        buffer.push_back(line);
-        if (buffer.size() >= bufferSize) {
-            chunks.push(std::move(buffer));
-            buffer.clear();
-            cv.notify_one();
-        }
+
+        reader_thread_ = std::thread(&FileInput::readFile, this);
     }
 
-    if (!buffer.empty()) {
-        chunks.push(std::move(buffer));
-        buffer.clear();
+    /**
+     * Destructor
+     */
+    FileInput::~FileInput() {
+        if (reader_thread_.joinable()) {
+            reader_thread_.join();
+        }
+        file_.close();
     }
-    endOfFile = true;
-    cv.notify_all();
+
+    /**
+     * Checks if a file reading is finished and there are no data to be processed
+     * @return
+     */
+    bool FileInput::isEOF() const {
+        return end_of_file_ && chunks_.empty();
+    }
+
+    /**
+     * Reads a chunk of file and gives it to a reading thread when it's ready
+     * @return
+     */
+    std::vector<std::string> FileInput::readChunk() {
+        std::unique_lock<std::mutex> lock(mutex_);
+        cv_.wait(lock, [&] { return !chunks_.empty() || end_of_file_; });
+        if (!chunks_.empty()) {
+            std::vector<std::string> chunk = std::move(chunks_.front());
+            chunks_.pop();
+            return chunk;
+        }
+        return {};
+    }
+
+    /**
+     * A file reading procedure. It is used by
+     * a separate thread, which implements a producer-consumer pattern.
+     */
+    void FileInput::readFile() {
+        std::string line;
+        bool headerSkipped = false;
+        while (std::getline(file_, line)) {
+            std::unique_lock<std::mutex> lock(mutex_);
+            if (!headerSkipped) {
+                headerSkipped = true;
+                continue;
+            }
+            buffer_.push_back(line);
+            if (buffer_.size() >= buffer_size_) {
+                chunks_.push(std::move(buffer_));
+                buffer_.clear();
+                cv_.notify_one();
+            }
+        }
+
+        if (!buffer_.empty()) {
+            chunks_.push(std::move(buffer_));
+            buffer_.clear();
+        }
+        end_of_file_ = true;
+        cv_.notify_all();
+    }
 }

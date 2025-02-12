@@ -1,21 +1,22 @@
 #pragma once
 #include <string>
-#include <fstream>
-#include <istream>
 #include <sstream>
 #include <iostream>
 #include "../include/data_file_generator.h"
+using namespace data;
 
 /**
  * Processes arguments from the command line as well as makes input file checking.
  */
-class CommandlineProcessor {
-public:
-    CommandlineProcessor(const std::string &inputFileName);
-    bool processArguments(int argc, char* argv[]);
-private:
-    bool runHelpCommand();
-    bool runGenerateCommand(std::istringstream &iss);
+namespace command {
+    class CommandlineProcessor {
+    public:
+        explicit CommandlineProcessor(std::string input_file_name);
+        bool processArguments(int argc, char* argv[]);
+    private:
+        static bool runHelpCommand();
+        bool runGenerateCommand(std::istringstream &iss) const;
 
-    std::string inputFileName;
-};
+        std::string input_file_name_;
+    };
+}

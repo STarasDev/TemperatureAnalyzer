@@ -6,15 +6,18 @@
 #include <fstream>
 #include <vector>
 #include "../include/data_processor.h"
+using namespace analyzer;
 
 /**
  * Calculates and writes results to a given output
  */
-class ResultGenerator {
-public:
-    static void writeToConsole(DataProcessor &processor);
+namespace report {
+    class ResultGenerator {
+    public:
+        static void writeToConsole(const DataProcessor &processor);
 
-    static void writeToFile(DataProcessor &processor, const std::string &outputFilename);
+        static void writeToFile(const DataProcessor &processor, const std::string &output_file_name);
 
-    static void calculateAndWriteResults(DataProcessor &processor, std::ostream &os);
-};
+        static void calculateAndWriteResults(const DataProcessor &processor, std::ostream &os);
+    };
+}
